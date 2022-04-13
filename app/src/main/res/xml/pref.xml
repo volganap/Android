@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:key="screen"
+        android:title="Screen">
+
+        <CheckBoxPreference
+            android:key="user_type"
+            android:title="@string/choose_user"/>
+
+        <ListPreference
+            android:dialogTitle="@string/dialog_rq"
+            android:entries="@array/request_entry"
+            android:entryValues="@array/request_values"
+            android:key="request_mode"
+            android:title="@string/type_rq" />
+
+        <ListPreference
+            android:dependency="user_type"
+            android:dialogTitle="@string/parent_dialog"
+            android:entries="@array/user_name"
+            android:entryValues="@array/user_phone"
+            android:key="parent_phone"
+            android:title="@string/parent_phone_title" />
+
+        <ListPreference
+            android:dependency="user_type"
+            android:dialogTitle="@string/kid_dialog"
+            android:entries="@array/user_name"
+            android:entryValues="@array/user_phone"
+            android:key="kid_phone"
+            android:title="@string/kid_phone_title" />
+
+        <ListPreference
+            android:dialogTitle="@string/td_dialog"
+            android:entries="@array/td_entries"
+            android:entryValues="@array/td_values"
+            android:key="timer_delay"
+            android:title="@string/td_title" />
+
+        <PreferenceScreen
+            android:key="server_setup"
+            android:title="@string/server_setup_title"
+            android:summary="@string/server_setup_sum">
+
+            <EditTextPreference
+                android:key="server_delay"
+                android:title="@string/server_delay"
+                android:defaultValue="12"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"/>
+
+            <EditTextPreference
+                android:key="marker_max_number"
+                android:title="@string/marker_max_number"
+                android:defaultValue="15"
+                android:maxLength="2"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"/>
+
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:key="map_setup"
+            android:title="@string/map_setup_title"
+            android:summary="@string/map_setup_sum">
+
+            <CheckBoxPreference
+                android:key="browser_mode"
+                android:title="@string/choose_br_mode"/>
+
+            <ListPreference
+                android:dialogTitle="@string/map_type_dialog"
+                android:entries="@array/map_type_entries"
+                android:entryValues="@array/map_type_values"
+                android:key="map_type"
+                android:title="@string/map_type_title" />
+
+            <EditTextPreference
+                android:key="marker_delay"
+                android:title="@string/marker_delay"
+                android:defaultValue="600"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"/>
+
+            <EditTextPreference
+                android:key="marker_scale"
+                android:title="@string/marker_scale"
+                android:defaultValue="15"
+                android:maxLength="2"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"/>
+
+            <EditTextPreference
+                android:key="max_location_time"
+                android:title="@string/max_location_time"
+                android:defaultValue="40"
+                android:maxLength="3"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"/>
+
+        </PreferenceScreen>
+
+</PreferenceScreen>
+
+<!--
+
+            app:useSimpleSummaryProvider="true"
+            app:dialogTitle="@string/server_delay_dg"
+-->

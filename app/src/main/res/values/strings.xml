@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">Координаты ребенка</string>
+    <string name="about">О программе</string>
+    <string name="version">Координаты ребенка (версия 3.1)</string>
+
+    <string name="settings">Общие настройки клиента</string>
+    <string name="server_config">Изменить настройки на сервере</string>
+    <string name="start_sv">Запустить фоновый сервис</string>
+    <string name="stop_sv">Остановить фоновый сервис</string>
+    <string name="get_msg">Последняя локация на сервере</string>
+    <string name="get_markers">История локаций на сервере</string>
+    <string name="check_connection">Проверка связи</string>
+
+    <string name="choose_user">Выбор режима Родитель или Ребенок</string>
+
+    <string name="type_rq">Режим запроса данных через:</string>
+    <string name="dialog_rq">Выбор режима запроса через:</string>
+    <string-array name="request_entry">
+        <item>Сеть</item>
+        <item>SMS</item>
+        <item>Сервер</item>
+    </string-array>
+    <string-array name="request_values">
+        <item>net</item>
+        <item>sms</item>
+        <item>server</item>
+    </string-array>
+
+    <string name="parent_phone_title">Номер телефона родителя</string>
+    <string name="parent_dialog">Выбор номера телефона родителя</string>
+    <string name="kid_phone_title">Номер телефона ребенка</string>
+    <string name="kid_dialog">Выбор номера телефона ребенка</string>
+
+    <string name="server_delay_dg">Ввести задержку в секундах</string>
+    <string name="timer_on_off">Отправка локации по таймеру</string>
+    <string name="td_title">Период опроса локации таймера</string>
+    <string name="td_dialog">Выбрать период опроса локации таймером</string>
+    <string-array name="td_entries">
+        <item>таймер выключен</item>
+        <item>3 мин</item>
+        <item>15 мин</item>
+        <item>30 мин</item>
+        <item>1 час</item>
+        <item>2 часа</item>
+        <item>4 часа</item>
+        <item>8 часов</item>
+    </string-array>
+    <string-array name="td_values">
+        <item>0</item>
+        <item>3</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>240</item>
+        <item>480</item>
+    </string-array>
+
+    <string name="title_activity_maps">Карта местонахождения телефона</string>
+    <string name="map_setup_title">Настройки карты</string>
+    <string name="map_setup_sum">Настройки отображения карты и маркеров</string>
+    <string name="choose_br_mode">Вывод местоположения на карту</string>
+    <string name="map_type_title">Вид карты</string>
+    <string name="map_type_dialog">Выбрать вид карты</string>
+    <string-array name="map_type_entries">
+        <item>Без карты</item>
+        <item>Схема</item>
+        <item>Гибрид</item>
+        <item>Спутник</item>
+    </string-array>
+    <string-array name="map_type_values">
+        <item>0</item>
+        <item>1</item>
+        <item>4</item>
+        <item>2</item>
+    </string-array>
+    <string name="marker_delay">Время аннимации маркера </string>
+    <string name="marker_scale">Масштаб отображения маркера </string>
+
+    <string name="server_setup_title">Настройки сервера</string>
+    <string name="server_setup_sum">Настройки для обмена данными с сервером</string>
+    <string name="marker_max_number">Количество сохраняемых точек на сервере</string>
+    <string name="server_delay">Задержка получения данных от сервера (сек.)</string>
+    <string name="max_location_time">Максимальное время определения локации телефоном, (сек.)</string>
+
+    <string name="get_kid_s_place">Получить координаты ребенка</string>
+    <string name="send_kid_setup">Изменить настройки ребенка</string>
+
+    <string name="lv_date">Дата и время</string>
+    <string name="lv_lat">Широта</string>
+    <string name="lv_lon">Долгота</string>
+    <string name="lv_accue">Точн.</string>
+    <string name="lv_batt">АКБ</string>
+
+</resources>

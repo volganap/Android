@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="user_name">
+        <item>Daddy Nikolay</item>
+        <item>Mommy Lyuba</item>
+        <item>Granny Ira</item>
+        <item>Granny Lyuba</item>
+        <item>Kid Vera (Tele2)</item>
+        <item>Kid Vera (Beeline)</item>
+        <item>Kid Vera (MTS)</item>
+        <item>Kid Gleb </item>
+    </string-array>
+    <string-array name="user_phone">
+        <item>+79051820187</item>
+        <item>+79093689630</item>
+        <item>+79600964022</item>
+        <item>+79030504064</item>
+        <item>+79023298456</item>
+        <item>+79093693567</item>
+        <item>+79177175605</item>
+        <item>+79600926230</item>
+    </string-array>
+</resources>

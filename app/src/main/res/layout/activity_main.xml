@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/black"
+        android:orientation="vertical"
+        android:padding="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:orientation="horizontal"
+                android:paddingTop="3dp">
+
+                <Button
+                    android:id="@+id/bt_getplace"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:text="@string/get_kid_s_place"
+                    android:textColor="@android:color/black"
+                    android:background="@drawable/bt_bg_green"/>
+
+                <Button
+                    android:id="@+id/bt_send_setup"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="5"
+                    android:background="@drawable/bt_bg_purple"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:text="@string/send_kid_setup"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/bt_start_sv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="4"
+                    android:background="@drawable/bt_bg_green"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:text="@string/start_sv"
+                    android:textColor="@android:color/black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:orientation="horizontal"
+                android:paddingTop="0dp">
+
+                <Button
+                    android:id="@+id/bt_get_data_server"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="7dp"
+                    android:layout_weight="4"
+                    android:background="@drawable/bt_bg_grey"
+                    android:paddingTop="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/get_msg"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/bt_get_markers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="7dp"
+                    android:layout_weight="4"
+                    android:paddingTop="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/get_markers"
+                    android:textColor="@android:color/black"
+                    android:background="@drawable/bt_bg_grey" />
+
+                <Button
+                    android:id="@+id/bt_check_connection"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="7dp"
+                    android:layout_weight="4"
+                    android:background="@drawable/bt_bg_grey"
+                    android:paddingTop="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/check_connection"
+                    android:textColor="@android:color/black" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/common_google_signin_btn_text_dark_pressed"
+            android:maxLines="3"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:textColor="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/common_google_signin_btn_text_dark_focused"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="116dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:paddingStart="2dp"
+                android:text="@string/lv_date"
+                android:textColor="#fff701" />
+
+            <TextView
+                android:layout_width="86dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:paddingStart="2dp"
+                android:text="@string/lv_lat"
+                android:textColor="#fff701" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:paddingStart="3dp"
+                android:text="@string/lv_lon"
+                android:textColor="#fff701" />
+
+            <TextView
+                android:layout_width="46dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:paddingStart="1dp"
+                android:text="@string/lv_accue"
+                android:textColor="#fff701" />
+
+            <TextView
+                android:layout_width="38dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingStart="1dp"
+                android:text="@string/lv_batt"
+                android:textColor="#fff701" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/TextAppearance.AppCompat.Display1"
+            tools:theme="@android:style/TextAppearance.Holo.Small" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--android:background="@color/colorPrimaryDark" -->

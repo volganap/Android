@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "730084074743",
+    "project_id": "kids-monitor-33d7a",
+    "storage_bucket": "kids-monitor-33d7a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730084074743:android:be737758c56789509e9ff2",
+        "android_client_info": {
+          "package_name": "ru.volganap.nikolay.kids_monitor_ably"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "730084074743-upmpock1qp9kaubnlpp4d38p7ni16o10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-IGqtIjRBW4OZrGnvcjqpsJ3R2yegBog"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730084074743-upmpock1qp9kaubnlpp4d38p7ni16o10.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
