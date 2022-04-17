@@ -23,9 +23,8 @@ public interface KM_Constants {
     String ACTION_FROM_TIMER = "action_from_timer";
     String ACTION_FROM_GEOPOS = "action_from_geopos";
     String ACTION_FROM_OKHTTP = "action_from_okhttp";
-    public static final String ACTION_FROM_BR = "ru.volganap.nikolay.kids_monitor_ably";
-    public static final String ABLY_API_KEY = "1UUc1A.biVwVQ:gTtZjwGija3aqGJ6"; /* Sign up at ably.io to get your API key */
-    public static final String URL_ADDR = "https://volganap.ru/location/index.php";
+    String ACTION_FROM_BR = "ru.volganap.nikolay.kids_monitor_ably";
+    String URL_ADDR = "https://volganap.ru/location/index.php";
     String ABLY_ROOM = "kids_monitor";
     String COMMAND_BASE = "way?";
     String COMMAND_GET_POSITION = "pos";

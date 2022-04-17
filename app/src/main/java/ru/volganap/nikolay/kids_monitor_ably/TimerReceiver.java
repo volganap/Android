@@ -31,15 +31,7 @@ public class TimerReceiver implements KM_Constants {
         intent.putExtra(TIMER_DELAY, interval);
         intent.setAction(ACTION_FROM_TIMER);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        /*
-        if (Build.VERSION.SDK_INT >= 23) {// Wakes up the device in Doze Mode
-            alarmMgr.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime() +
-                    interval * 1000 * 60, alarmIntent);
-        } else {// Wakes up the device in Idle Mode
-            alarmMgr.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime() +
-                    interval * 1000 * 60, alarmIntent);
-        }
-        */
+
         if (Build.VERSION.SDK_INT >= 23) {// Wakes up the device in Doze Mode
             alarmMgr.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime() +
                     interval * 1000 * 60, alarmIntent);

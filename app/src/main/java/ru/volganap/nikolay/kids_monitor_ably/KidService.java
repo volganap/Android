@@ -52,8 +52,9 @@ public class KidService extends Service implements KM_Constants {
         notificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
         //Init ABLY
         try {
-            AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
-
+            String ably_key = getBaseContext().getResources().getString(R.string.ably_key);
+            AblyRealtime ablyRealtime = new AblyRealtime(ably_key);
+            //AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
             channel = ablyRealtime.channels.get(ABLY_ROOM);
             channel.subscribe(PARENT_PHONE, messages -> {
                     String s_command = messages.data.toString();
@@ -105,7 +106,6 @@ public class KidService extends Service implements KM_Constants {
                                     getPosition(sender);
                                     break;
                                 default:
-                                    //getCommand(message + REG_SIGN + sender);
                                     getCommand(message);
                                     break;
                             }
@@ -132,11 +132,9 @@ public class KidService extends Service implements KM_Constants {
                         .setContentIntent(contentIntent)
                         .setContentTitle(Title)
                         .setContentText(Text);
-                        //.setPriority(PRIORITY_HIGH);
 
         createChannelIfNeeded(notificationManager);
         Notification notification = builder.build();
-        //notificationManager.notify(NOTIFY_ID, notification);
         startForeground(NOTIFY_ID, notification);
     }
 
@@ -165,9 +163,6 @@ public class KidService extends Service implements KM_Constants {
             handler.post(myRunnable);
         } else {
             sendMessageToParent(sender, LOCATION_IS_TURNED_OFF);
-            /*Toast.makeText(getApplicationContext(), "Service: Please turn on your location", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent); */
             Log.d(LOG_TAG, "Service: Please turn on your location");
         }
     }
@@ -242,10 +237,8 @@ public class KidService extends Service implements KM_Constants {
         try {
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNo, null, message, null, null);
-            //Toast.makeText(getApplicationContext(), "SMS sent.", Toast.LENGTH_LONG).show();
             Log.d(LOG_TAG, "Service: SMS sent to number: " + phoneNo + " with message: " + message);
         } catch (Exception e) {
-            //Toast.makeText(getApplicationContext(),"SMS faild, please try again later", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             Log.d(LOG_TAG, "Service: SMS failed. SMS Exception: " + e.toString());
         }

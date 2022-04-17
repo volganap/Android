@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
-//import org.greenrobot.eventbus.EventBus;
 import java.util.Arrays;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Constants{
@@ -67,7 +66,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Consta
 
     protected void showKidsDataToParent(Context context, String sender,String message) {
         Log.d(LOG_TAG, "SmsBroadcastReceiver - Kid's message is: " + message);
-        //EventBus.getDefault().post(new EventBus_Parent(message));
         Intent intent = new Intent();
         intent.setAction(ACTION_FROM_OKHTTP);
         intent.putExtra(SENDER, sender);

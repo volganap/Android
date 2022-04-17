@@ -3,7 +3,6 @@ package ru.volganap.nikolay.kids_monitor_ably;
 import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
-//import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -16,11 +15,11 @@ import okhttp3.Response;
 public class OkHttpRequest implements KM_Constants{
     final String STORAGE_IS_EMPTY = "storage is empty";
     int attempt = 0;
-    private static Context context;
+    //private static Context context;
 
     public void serverGetback(Context context, String sender, String command, String value) {
         String server_user;
-        this.context = context;
+        //this.context = context;
         if (!sender.equals(PARENT_PHONE)) {
             server_user = KID_PHONE;
         } else {
@@ -44,7 +43,6 @@ public class OkHttpRequest implements KM_Constants{
             public void onFailure(final Call call, IOException e) {
                 Log.d(LOG_TAG, "OkHttpRequest: Server ERROR is: " + e.toString());
                 if (sender.equals(PARENT_PHONE)) {
-                    //EventBus.getDefault().postSticky(new EventBus_Parent(NET_ERROR_STATE));
                     callbackSender(context, sender, NET_ERROR_STATE);
                 } else {
                     if (attempt > 3 ) {
@@ -68,11 +66,9 @@ public class OkHttpRequest implements KM_Constants{
                            else message = OK_STATE_PARENT + STA_SIGN + res;
                     } else message = CONFIG_SERVER_STATE + STA_SIGN + res;
                     Log.d(LOG_TAG, "OkHttpRequest: onResponse:  call EventBus_Parent " + res);
-                    //EventBus.getDefault().postSticky(new EventBus_Parent(message));
                     callbackSender(context, sender, message);
                 } else {
                     Log.d(LOG_TAG, "OkHttpRequest: onResponse:  callbackKidservice " + command);
-                    //callbackKidservice(context, sender, OK_STATE + STA_SIGN + command);
                     callbackSender(context, sender, OK_STATE_KID + STA_SIGN + command);
                 }
             }

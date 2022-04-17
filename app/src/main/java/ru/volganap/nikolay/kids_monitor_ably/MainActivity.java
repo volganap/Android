@@ -38,11 +38,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-//import org.greenrobot.eventbus.EventBus;
-//import org.greenrobot.eventbus.Subscribe;
-//import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +45,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements KM_Constants{
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public static final String GOOGLE_LINK = "https://www.google.com/maps?q=";
     public static final int PERMISSIONS_REQUEST_SEND_SMS_PARENT =0;
     public static final int PERMISSIONS_REQUEST_SEND_SMS_KID =2;
     public static final String REQUEST_NET ="net";
@@ -89,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_FROM_BR);
         filter.addAction(ACTION_FROM_OKHTTP);
-        //filter.addAction(ACTION_FROM_GEOPOS);
         mainBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -104,12 +97,11 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         };
         registerReceiver(mainBroadcastReceiver, filter);
 
-        /*if (!EventBus.getDefault().hasSubscriberForEvent(MainActivity.class)) {
-            EventBus.getDefault().register(this);
-        }*/
-        //Init ABLY and GET MESSAGE
         try {
-            AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
+            String ably_key = getApplicationContext().getResources().getString(R.string.ably_key);
+            AblyRealtime ablyRealtime = new AblyRealtime(ably_key);
+            //AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
+
             channel = ablyRealtime.channels.get(ABLY_ROOM);
             channel.subscribe(KID_PHONE, messages -> {
                     Log.d(LOG_TAG, "Main - Ably message received: " + messages.name + " - " + messages.data);
@@ -361,12 +353,9 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         }
     }
 
-    //@Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    //public void onEvent(EventBus_Parent event){
+    //Perform actions after reply came from Kid or Server
     public void replyRecieved(String location_message){
-        //Log.d(LOG_TAG, "MainActivity: EventBus_Parent is worked, position is:  " + event.location_message);
         Log.d(LOG_TAG, "MainActivity: replyRecieved is worked, position is:  " + location_message);
-        //String [] complex_message = (event.location_message).split(STA_SIGN);
 
         String [] complex_message = location_message.split(STA_SIGN);
         String status_state = complex_message[0];
@@ -439,9 +428,7 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         for(int i=0; i < loc_array_length; i++) {
             String [] helper_mes = loc_array[i].split(REG_SIGN);
             //Check for if the Data of chosen Kid's phone
-            //if (helper_mes[5].equals(sharedPrefs.getString(KID_PHONE, "" ))) {
-                record.add(helper_mes);
-            //}
+            record.add(helper_mes);
         }
 
         if (loc_array_length <2) {
@@ -523,22 +510,8 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
     public void onDestroy() {
         channel.unsubscribe();
         unregisterReceiver(mainBroadcastReceiver);
-        //EventBus.getDefault().unregister(this);
         Log.d(LOG_TAG, "MainActivity: onDestroy ");
         super.onDestroy();
     }
 
 }
-
-//String geo_link = GOOGLE_LINK + record.get(0)[0] + " " + record.get(0)[1] + "&t=h";
-//startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(geo_link)));
-
-        /*Handler mainHandler = new Handler(Looper.getMainLooper());
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-            }
-        };
-        mainHandler.post(myRunnable); */
-
-//loc_array[i] = loc_array[i].replaceAll("\\#","  ");
