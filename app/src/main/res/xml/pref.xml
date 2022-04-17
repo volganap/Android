@@ -71,6 +71,10 @@
                 android:key="browser_mode"
                 android:title="@string/choose_br_mode"/>
 
+            <CheckBoxPreference
+                android:key="chosen_kid_markers"
+                android:title="@string/show_chosen_kid"/>
+
             <ListPreference
                 android:dialogTitle="@string/map_type_dialog"
                 android:entries="@array/map_type_entries"

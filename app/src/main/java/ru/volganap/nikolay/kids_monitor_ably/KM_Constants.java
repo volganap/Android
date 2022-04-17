@@ -17,6 +17,7 @@ public interface KM_Constants {
     String MARKER_DELAY = "marker_delay";
     String MARKER_SCALE = "marker_scale";
     String MARKER_MAX_NUMBER = "marker_max_number";
+    String CHOSEN_KID_MARKERS = "chosen_kid_markers";
     String MAX_LOCATION_TIME = "max_location_time";
     String CHANGE_CONFIG_SERVER = "config";
 

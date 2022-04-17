@@ -39,26 +39,26 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
-                    android:layout_weight="5"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bt_bg_green"
                     android:paddingLeft="3dp"
+                    android:paddingTop="10dp"
                     android:paddingRight="3dp"
+                    android:paddingBottom="10dp"
                     android:text="@string/get_kid_s_place"
-                    android:textColor="@android:color/black"
-                    android:background="@drawable/bt_bg_green"/>
+                    android:textColor="@android:color/black" />
 
                 <Button
                     android:id="@+id/bt_send_setup"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
-                    android:layout_weight="5"
+                    android:layout_weight="1"
                     android:background="@drawable/bt_bg_purple"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
                     android:paddingLeft="3dp"
+                    android:paddingTop="10dp"
                     android:paddingRight="3dp"
+                    android:paddingBottom="10dp"
                     android:text="@string/send_kid_setup"
                     android:textColor="@android:color/white" />
 
@@ -67,12 +67,12 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
-                    android:layout_weight="4"
+                    android:layout_weight="1"
                     android:background="@drawable/bt_bg_green"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
                     android:paddingLeft="3dp"
+                    android:paddingTop="10dp"
                     android:paddingRight="3dp"
+                    android:paddingBottom="10dp"
                     android:text="@string/start_sv"
                     android:textColor="@android:color/black" />
 
@@ -88,9 +88,9 @@
                 <Button
                     android:id="@+id/bt_get_data_server"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="7dp"
-                    android:layout_weight="4"
+                    android:layout_weight="1"
                     android:background="@drawable/bt_bg_grey"
                     android:paddingTop="5dp"
                     android:paddingRight="5dp"
@@ -100,21 +100,21 @@
                 <Button
                     android:id="@+id/bt_get_markers"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="7dp"
-                    android:layout_weight="4"
+                    android:layout_weight="1"
+                    android:background="@drawable/bt_bg_grey"
                     android:paddingTop="5dp"
                     android:paddingRight="5dp"
                     android:text="@string/get_markers"
-                    android:textColor="@android:color/black"
-                    android:background="@drawable/bt_bg_grey" />
+                    android:textColor="@android:color/black" />
 
                 <Button
                     android:id="@+id/bt_check_connection"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="7dp"
-                    android:layout_weight="4"
+                    android:layout_weight="1"
                     android:background="@drawable/bt_bg_grey"
                     android:paddingTop="5dp"
                     android:paddingRight="5dp"

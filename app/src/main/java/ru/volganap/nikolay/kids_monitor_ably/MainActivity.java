@@ -446,7 +446,13 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
             m.put(ATTRIBUTE_NAME_DATE, record.get(i)[3]);
             m.put(ATTRIBUTE_NAME_ACCU, record.get(i)[2]);
             m.put(ATTRIBUTE_NAME_BATT, record.get(i)[4]);
-            data.add(m);
+            if (sharedPrefs.getBoolean(CHOSEN_KID_MARKERS, false)) {
+                if (sharedPrefs.getString(KID_PHONE, "").equals(record.get(i)[5])) {
+                    data.add(m);
+                }
+            } else {
+                data.add(m);
+            }
         }
         SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.list_item, from, to);
         lvMain.setAdapter(adapter);

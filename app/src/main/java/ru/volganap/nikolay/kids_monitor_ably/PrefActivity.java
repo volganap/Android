@@ -18,6 +18,8 @@ public class PrefActivity extends PreferenceActivity implements KM_Constants {
     public static final String NUMBERS_THE_SAME = "Номера родителя и ребенка не должны совпадать";
     public static final String PARENT_USER = "Пользователь - Родитель";
     public static final String KID_USER = "Пользователь - Ребенок";
+    public static final String SINGLE_KID_MARKERS = "Отображаются только маркеры выбранного номера";
+    public static final String MULTIPLE_KID_MARKERS = "Отображается весь загруженный список маркеров";
     public static final int PARENT_DEFAULT_POSITION = 0;
     public static final int KID_DEFAULT_POSITION = 4;
     public static final int REQUEST_DEFAULT_POSITION = 1;
@@ -50,6 +52,7 @@ public class PrefActivity extends PreferenceActivity implements KM_Constants {
         private void initPrefSetup() {
             initCheckBoxPreference(PREF_USER);
             initCheckBoxPreference(BROWSER_MODE);
+            initCheckBoxPreference(CHOSEN_KID_MARKERS);
             initListPreference(PREF_REQUEST, REQUEST_DEFAULT_POSITION);
             initListPreference(PARENT_PHONE, PARENT_DEFAULT_POSITION);
             initListPreference(KID_PHONE, KID_DEFAULT_POSITION);
@@ -96,6 +99,7 @@ public class PrefActivity extends PreferenceActivity implements KM_Constants {
             switch (key) {
                 case PREF_USER:
                 case BROWSER_MODE:
+                case CHOSEN_KID_MARKERS:
                     updateUserCheckBox(key);
                     break;
                 case PARENT_PHONE:
@@ -147,6 +151,9 @@ public class PrefActivity extends PreferenceActivity implements KM_Constants {
                     break;
                 case BROWSER_MODE:
                     mode = (preference.isChecked()) ? SHOW_BR_MODE : HIDE_BR_MODE;
+                    break;
+                case CHOSEN_KID_MARKERS:
+                    mode = (preference.isChecked()) ? SINGLE_KID_MARKERS : MULTIPLE_KID_MARKERS;
                     break;
             }
             preference.setSummary(mode);
