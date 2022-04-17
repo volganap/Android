@@ -79,7 +79,7 @@ public class KidService extends Service implements KM_Constants {
             new TimerReceiver().setTimerAction(this, valueOf(td_shared)); // The timer is going on to work;
         }
 
-        //Init SMS Receiver
+        //Init BroadcastReceiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_FROM_BR);
         filter.addAction(ACTION_FROM_OKHTTP);

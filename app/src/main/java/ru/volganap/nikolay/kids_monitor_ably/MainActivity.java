@@ -2,9 +2,11 @@ package ru.volganap.nikolay.kids_monitor_ably;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
@@ -22,6 +24,7 @@ import io.ably.lib.types.ErrorInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
@@ -36,9 +39,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+//import org.greenrobot.eventbus.EventBus;
+//import org.greenrobot.eventbus.Subscribe;
+//import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
 
     private SharedPreferences sharedPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener prefChangeListener;
+    BroadcastReceiver mainBroadcastReceiver;
     TextView tv_state;
     private Button bt_getplace, bt_start_sv, bt_send_setup, bt_get_markers, bt_get_data_server, bt_check_connection;
     private Boolean perms_granted = false;
@@ -81,9 +85,28 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         bt_start_sv = findViewById(R.id.bt_start_sv);
         bt_check_connection = findViewById(R.id.bt_check_connection);
 
-        if (!EventBus.getDefault().hasSubscriberForEvent(MainActivity.class)) {
+        //Init BroadcastReceiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_FROM_BR);
+        filter.addAction(ACTION_FROM_OKHTTP);
+        //filter.addAction(ACTION_FROM_GEOPOS);
+        mainBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null) {
+                    String sender = intent.getStringExtra(SENDER);
+                    String message = intent.getStringExtra(MESSAGE);
+                    String action = intent.getAction();
+                    Log.d(LOG_TAG, "Service: Get back with Sender: " + sender + ", action: " + action + ", command: " + message);
+                    replyRecieved (message);
+                }
+            }
+        };
+        registerReceiver(mainBroadcastReceiver, filter);
+
+        /*if (!EventBus.getDefault().hasSubscriberForEvent(MainActivity.class)) {
             EventBus.getDefault().register(this);
-        }
+        }*/
         //Init ABLY and GET MESSAGE
         try {
             AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
@@ -93,7 +116,17 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
                     if ((messages.name).equals(KID_PHONE) && (sharedPrefs.getBoolean(PREF_USER, false))) {
                         String loc_mes = messages.data.toString();
                         //onEvent(new EventBus_Parent(loc_mes));
-                        EventBus.getDefault().postSticky(new EventBus_Parent(loc_mes));
+                        //EventBus.getDefault().postSticky(new EventBus_Parent(loc_mes));
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        Runnable myRunnable = () -> {
+                            try {
+                                replyRecieved (loc_mes);
+                            } catch (Exception e) {
+                                Log.d(LOG_TAG, "Main: Handler: Ably_message EXCEPTION: " + e.toString());
+                            }
+                        };
+                        handler.post(myRunnable);
                     }
             });
 
@@ -104,7 +137,8 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         //Init Settings Preferences
         sharedPrefs = getSharedPreferences(PREF_ACTIVITY, MODE_PRIVATE);
         prefChangeListener = (sharedPreferences, key) -> {
-                tv_state.setText("");
+            Log.d(LOG_TAG, "Main - prefChangeListener triggered on: " +key);
+            tv_state.setText("");
                 if (key.equals(PREF_USER)) {
                     Log.d(LOG_TAG, "On Preferences changed");
                     setButtons(perms_granted); //State of Buttons depend on user mode
@@ -178,8 +212,7 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
                  int server_delay = Integer.parseInt(sharedPrefs.getString(SERVER_DELAY_TITLE, DEFAULT_SERVER_DATA_DELAY));
                  if (rq_mode.equals(REQUEST_SERVER)) {   // get the location from server in N seconds
                     Handler handler = new Handler();
-                    handler.postDelayed(()-> getBackWithServer(SERVER_SINGLE_REQUEST, ""), server_delay * 1000);
-                 }
+                    handler.postDelayed(()-> getBackWithServer(SERVER_SINGLE_REQUEST, ""), server_delay * 1000);                 }
 
                 break;
         }
@@ -328,10 +361,14 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         }
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onEvent(EventBus_Parent event){
-        Log.d(LOG_TAG, "MainActivity: EventBus_Parent is worked, position is:  " + event.location_message);
-        String [] complex_message = (event.location_message).split(STA_SIGN);
+    //@Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    //public void onEvent(EventBus_Parent event){
+    public void replyRecieved(String location_message){
+        //Log.d(LOG_TAG, "MainActivity: EventBus_Parent is worked, position is:  " + event.location_message);
+        Log.d(LOG_TAG, "MainActivity: replyRecieved is worked, position is:  " + location_message);
+        //String [] complex_message = (event.location_message).split(STA_SIGN);
+
+        String [] complex_message = location_message.split(STA_SIGN);
         String status_state = complex_message[0];
         String source = SOURCE_SERVER;
         String loc_array []={""};
@@ -485,7 +522,8 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
     @Override
     public void onDestroy() {
         channel.unsubscribe();
-        EventBus.getDefault().unregister(this);
+        unregisterReceiver(mainBroadcastReceiver);
+        //EventBus.getDefault().unregister(this);
         Log.d(LOG_TAG, "MainActivity: onDestroy ");
         super.onDestroy();
     }

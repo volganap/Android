@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import org.greenrobot.eventbus.EventBus;
+//import org.greenrobot.eventbus.EventBus;
 import java.util.Arrays;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Constants{
@@ -31,7 +31,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Consta
                 Log.d(LOG_TAG, "SmsBroadcastReceiver - User is a PARENT and get some message from a Kid");
                 String kidPhone = sharedPrefs.getString(KID_PHONE, "" );
                 if (kidPhone.contains(sender)) {
-                    showKidsDataToParent(message);    // show the data about KID
+                    showKidsDataToParent(context, sender, message);    // show the data about KID
                     Log.d(LOG_TAG, "SmsBroadcastReceiver - Sender: " + sender + ",  Message: " + message);
                 } else {   //SMS was NOT from a Parent
                     Log.d(LOG_TAG, "SMS was NOT from a KID or content was NOT appropriated");
@@ -55,7 +55,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Consta
                 callBackToKidService(context, TIMER_SENDER, "");
             }
         }
-
     }
 
     protected void callBackToKidService(Context context, String sender, String message) {
@@ -66,8 +65,13 @@ public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Consta
         context.sendBroadcast(callback_Main);
     }
 
-    protected void showKidsDataToParent(String message) {
-        Log.d(LOG_TAG, "SmsBroadcastReceiver - Kid is at the position: " + message);
-        EventBus.getDefault().post(new EventBus_Parent(message));
+    protected void showKidsDataToParent(Context context, String sender,String message) {
+        Log.d(LOG_TAG, "SmsBroadcastReceiver - Kid's message is: " + message);
+        //EventBus.getDefault().post(new EventBus_Parent(message));
+        Intent intent = new Intent();
+        intent.setAction(ACTION_FROM_OKHTTP);
+        intent.putExtra(SENDER, sender);
+        intent.putExtra(MESSAGE, message);
+        context.sendBroadcast(intent);
     }
 }

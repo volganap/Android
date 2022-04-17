@@ -3,7 +3,7 @@ package ru.volganap.nikolay.kids_monitor_ably;
 import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
-import org.greenrobot.eventbus.EventBus;
+//import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -44,10 +44,11 @@ public class OkHttpRequest implements KM_Constants{
             public void onFailure(final Call call, IOException e) {
                 Log.d(LOG_TAG, "OkHttpRequest: Server ERROR is: " + e.toString());
                 if (sender.equals(PARENT_PHONE)) {
-                    EventBus.getDefault().postSticky(new EventBus_Parent(NET_ERROR_STATE));
+                    //EventBus.getDefault().postSticky(new EventBus_Parent(NET_ERROR_STATE));
+                    callbackSender(context, sender, NET_ERROR_STATE);
                 } else {
                     if (attempt > 3 ) {
-                        callbackKidservice(context, sender, NET_ERROR_GOT_LOCATION_STATE + STA_SIGN + command);
+                        callbackSender(context, sender, NET_ERROR_GOT_LOCATION_STATE + STA_SIGN + command);
                     } else {
                         Log.d(LOG_TAG, "OkHttpRequest: attempt: " + attempt + ", onFailure: " + e.toString());
                         attempt++;
@@ -67,17 +68,18 @@ public class OkHttpRequest implements KM_Constants{
                            else message = OK_STATE_PARENT + STA_SIGN + res;
                     } else message = CONFIG_SERVER_STATE + STA_SIGN + res;
                     Log.d(LOG_TAG, "OkHttpRequest: onResponse:  call EventBus_Parent " + res);
-                    EventBus.getDefault().postSticky(new EventBus_Parent(message));
+                    //EventBus.getDefault().postSticky(new EventBus_Parent(message));
+                    callbackSender(context, sender, message);
                 } else {
                     Log.d(LOG_TAG, "OkHttpRequest: onResponse:  callbackKidservice " + command);
                     //callbackKidservice(context, sender, OK_STATE + STA_SIGN + command);
-                    callbackKidservice(context, sender, OK_STATE_KID + STA_SIGN + command);
+                    callbackSender(context, sender, OK_STATE_KID + STA_SIGN + command);
                 }
             }
         });
     }
 
-    public void callbackKidservice(Context context, String sender, String message) {
+    public void callbackSender(Context context, String sender, String message) {
         Intent intent = new Intent();
         intent.setAction(ACTION_FROM_OKHTTP);
         intent.putExtra(SENDER, sender);
