@@ -58,6 +58,7 @@ public class KidService extends Service implements KM_Constants {
             channel = ablyRealtime.channels.get(ABLY_ROOM);
             channel.subscribe(PARENT_PHONE, messages -> {
                     String s_command = messages.data.toString();
+                Log.d(LOG_TAG, "Service - Ably message received (ALL): sender: " + messages.name + ", command: "  + s_command);
                     if (messages.name.equals(PARENT_PHONE) && (s_command.contains(COMMAND_BASE))) {
                         Log.d(LOG_TAG, "Service - Ably message received: sender: " + messages.name + ", command: "  + s_command);
                         getCommand(s_command);
