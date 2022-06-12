@@ -22,8 +22,8 @@ public class PrefActivity extends PreferenceActivity implements KM_Constants {
     public static final String MULTIPLE_KID_MARKERS = "Отображается весь загруженный список маркеров";
     public static final int PARENT_DEFAULT_POSITION = 0;
     public static final int KID_DEFAULT_POSITION = 4;
-    public static final int REQUEST_DEFAULT_POSITION = 1;
-    public static final int TIMER_DELAY_DEFAULT = 3;
+    public static final int REQUEST_DEFAULT_POSITION = 0;
+    public static final int TIMER_DELAY_DEFAULT = 0;
     public static final int MAP_TYPE_DEFAULT_POSITION = 1;
 
     private static SharedPreferences sharedPrefs;

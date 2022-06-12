@@ -15,16 +15,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import io.ably.lib.realtime.AblyRealtime;
-import io.ably.lib.realtime.Channel;
-import io.ably.lib.realtime.CompletionListener;
-import io.ably.lib.types.AblyException;
-import io.ably.lib.types.ErrorInfo;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
@@ -35,6 +28,11 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,13 +56,13 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
     public static final String DATA_REQUEST_PROCESSING =" Идет обработка запроса:...";
     public static final String NE_REQ_NOT_SENT ="Ошибка сети. Запрос не отправлен. Выберите в настройках <Отправлять запрос через СМС>";
 
+    private MqttHelper mqttHelper;
     private SharedPreferences sharedPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener prefChangeListener;
     BroadcastReceiver mainBroadcastReceiver;
     TextView tv_state;
     private Button bt_getplace, bt_start_sv, bt_send_setup, bt_get_markers, bt_get_data_server, bt_check_connection;
     private Boolean perms_granted = false;
-    private Channel channel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,35 +95,6 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         };
         registerReceiver(mainBroadcastReceiver, filter);
 
-        try {
-            String ably_key = getApplicationContext().getResources().getString(R.string.ably_key);
-            AblyRealtime ablyRealtime = new AblyRealtime(ably_key);
-            //AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
-
-            channel = ablyRealtime.channels.get(ABLY_ROOM);
-            channel.subscribe(KID_PHONE, messages -> {
-                    Log.d(LOG_TAG, "Main - Ably message received: " + messages.name + " - " + messages.data);
-                    if ((messages.name).equals(KID_PHONE) && (sharedPrefs.getBoolean(PREF_USER, false))) {
-                        String loc_mes = messages.data.toString();
-                        //onEvent(new EventBus_Parent(loc_mes));
-                        //EventBus.getDefault().postSticky(new EventBus_Parent(loc_mes));
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        Runnable myRunnable = () -> {
-                            try {
-                                replyRecieved (loc_mes);
-                            } catch (Exception e) {
-                                Log.d(LOG_TAG, "Main: Handler: Ably_message EXCEPTION: " + e.toString());
-                            }
-                        };
-                        handler.post(myRunnable);
-                    }
-            });
-
-        } catch (AblyException e) {
-            e.printStackTrace();
-        }
-
         //Init Settings Preferences
         sharedPrefs = getSharedPreferences(PREF_ACTIVITY, MODE_PRIVATE);
         prefChangeListener = (sharedPreferences, key) -> {
@@ -136,6 +105,33 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
                     setButtons(perms_granted); //State of Buttons depend on user mode
                 }
         };
+
+        //Init MQTT;
+        String id_mqtt = sharedPrefs.getString(PARENT_PHONE, "" ) + System.currentTimeMillis();;
+        Log.d(LOG_TAG,"Main: MQTT Id: " + id_mqtt);
+        mqttHelper = new MqttHelper(getApplicationContext(), PARENT_PHONE, id_mqtt);
+        mqttHelper.mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean b, String s) {
+                Log.d(LOG_TAG,"Main: MQTT * " +"Connected: " + s);
+            }
+
+            @Override
+            public void connectionLost(Throwable throwable) {
+                Log.d(LOG_TAG,"Main: MQTT * "+"Connection lost");
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                Log.d(LOG_TAG,"Main: MQTT: messageArrived * "+ mqttMessage.toString());
+                replyRecieved (mqttMessage.toString());
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+            }
+        });
 
         sharedPrefs.registerOnSharedPreferenceChangeListener(prefChangeListener);
         setButtons(perms_granted);
@@ -179,25 +175,22 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
         refreshStatus(status_mes);
         String rq_mode = sharedPrefs.getString(PREF_REQUEST, "");
         switch (rq_mode) {
-            case REQUEST_NET:
-                try { // ABLY PUBLISH a message
-                    channel.publish(PARENT_PHONE, rq_message, new CompletionListener() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(LOG_TAG,"Main - onSuccess - Message sent: " + rq_command);
-                        }
-                        @Override
-                        public void onError(ErrorInfo reason) {
-                            Log.d(LOG_TAG,"Main - onError - Message not sent, error occurred: " + reason.message);
-                            refreshStatus(NE_REQ_NOT_SENT);
-                        }
-                    });
-                } catch (AblyException e) {
+            case REQUEST_NET:      // MQTT PUBLISH a message
+                try {
+                    MqttMessage message = new MqttMessage();
+                    message.setPayload(rq_message.getBytes());
+                    mqttHelper.mqttAndroidClient.publish(KID_PHONE, message);
+                    /* if(!mqttHelper.mqttAndroidClient.isConnected()){
+                        Log.d(LOG_TAG,"Main - onSuccess - Message sent: " + rq_command);
+                    } */
+                } catch (MqttException e) {
+                    System.err.println("Error Publishing: " + e.getMessage());
+                        Log.d(LOG_TAG,"Main - MQTT - onError: " + rq_command);
                     refreshStatus(NE_REQ_NOT_SENT);
                     e.printStackTrace();
                 }
                 break;
-            case REQUEST_SERVER:
+            case REQUEST_SERVER:    // SMS PUBLISH a message
             case REQUEST_SMS:
                  sendSMSMessage(kid_phone, rq_message);
 
@@ -401,9 +394,12 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
                 source = ", источник: " + complex_message[complex_message.length-1];
                 refreshStatus(status_state + complex_message[1] + source);
                 break;
+            case CONFIRM_CONNECTION:
+                source = ", источник: " + complex_message[complex_message.length-1] + complex_message[complex_message.length-2];
+                refreshStatus(status_state + source);
+                break;
             case NO_CHANGE_STATE:
             case NO_LOCATION_FOUND_STATE:
-            case CONFIRM_CONNECTION:
             case LOCATION_IS_TURNED_OFF:
             default:
                 source = ", источник: " + complex_message[complex_message.length-1];
@@ -514,10 +510,24 @@ public class MainActivity extends AppCompatActivity implements KM_Constants{
 
     @Override
     public void onDestroy() {
-        channel.unsubscribe();
+        try {
+            mqttHelper.mqttAndroidClient.unsubscribe(PARENT_PHONE);
+        } catch (MqttException ex) {
+            System.err.println("Exception whilst UNsubscribing");
+            ex.printStackTrace();
+        }
+
         unregisterReceiver(mainBroadcastReceiver);
         Log.d(LOG_TAG, "MainActivity: onDestroy ");
         super.onDestroy();
     }
-
 }
+                        /*Handler handler = new Handler(Looper.getMainLooper());
+                        Runnable myRunnable = () -> {
+                            try {
+                                replyRecieved (loc_mes);
+                            } catch (Exception e) {
+                                Log.d(LOG_TAG, "Main: Handler: Ably_message EXCEPTION: " + e.toString());
+                            }
+                        };
+                        handler.post(myRunnable); */

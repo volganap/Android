@@ -20,4 +20,10 @@
         <item>+79177175605</item>
         <item>+79600926230</item>
     </string-array>
+
+    <string name="serverUri">tcp://185.87.48.105:1883</string>
+    <string name="username1">km_user1</string>
+    <string name="password1">btbinr12</string>
+    <string name="username2">km_user2</string>
+    <string name="password2">btbinr98</string>
 </resources>

@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import java.util.Arrays;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Constants{
     private SharedPreferences sharedPrefs;
@@ -18,10 +17,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Consta
         // Check block of Intent: SMS received
         sharedPrefs = context.getSharedPreferences(PREF_ACTIVITY, context.MODE_PRIVATE);
         if (intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
-            Boolean user_mode = sharedPrefs.getBoolean(PREF_USER, false );     //getting a value of User Mode
-            String[] allowedPhones = context.getResources().getStringArray(R.array.user_phone); //getting allowed parent's phones
-            String allowedParentSms = COMMAND_BASE;    //getting allowed parent's SMS
             String sender, message;
+            Boolean user_mode = sharedPrefs.getBoolean(PREF_USER, false );     //getting a value of User Mode
             SmsMessage[] msgs = Telephony.Sms.Intents.getMessagesFromIntent(intent);
             SmsMessage smsMessage = msgs[0];
             sender = smsMessage.getDisplayOriginatingAddress();
@@ -37,10 +34,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver implements KM_Consta
                 }
             } else {                                        //User is a Kid
                 Log.d(LOG_TAG, "SmsBroadcastReceiver - User is a KID and get some message from a Parent");
-                if (Arrays.asList(allowedPhones).contains(sender) && message.contains(allowedParentSms)) {
+                // Check for if the parent number and the command are among the allowed ones
+                if (new CheckForSM().allowedOperation(context, sender, message)) {
                     Log.d(LOG_TAG, "SmsBroadcastReceiver - Sender :" + sender + ",  Message: " + message);
                     callBackToKidService(context, sender, message);    // make an answer SMS to a parent
-                } else {   //SMS was NOT from a Parent
+                } else {                                                //SMS was NOT from a Parent
                     Log.d(LOG_TAG, "SmsBroadcastReceiver - SMS was NOT from a PARENT or content was NOT allowed");
                 }
             }

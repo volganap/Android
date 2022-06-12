@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Координаты ребенка</string>
+    <string name="app_name">Координаты ребенка_v2</string>
     <string name="about">О программе</string>
-    <string name="version">Координаты ребенка (версия 3.1)</string>
+    <string name="version">Координаты ребенка (версия 3.3)</string>
 
     <string name="settings">Общие настройки клиента</string>
     <string name="server_config">Изменить настройки на сервере</string>

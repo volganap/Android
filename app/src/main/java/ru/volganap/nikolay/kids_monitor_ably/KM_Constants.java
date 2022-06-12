@@ -26,7 +26,6 @@ public interface KM_Constants {
     String ACTION_FROM_OKHTTP = "action_from_okhttp";
     String ACTION_FROM_BR = "ru.volganap.nikolay.kids_monitor_ably";
     String URL_ADDR = "https://volganap.ru/location/index.php";
-    String ABLY_ROOM = "kids_monitor";
     String COMMAND_BASE = "way?";
     String COMMAND_GET_POSITION = "pos";
     String COMMAND_CHECK_IT = "check";

@@ -57,12 +57,11 @@ public class FindGeoPos implements KM_Constants {
             public void run() {
                 Log.d(LOG_TAG, "FindGeoPos: Handler is working");
                 if (message == null) {
-                    String bat = batteryLevel();
                     Log.d(LOG_TAG, "FindGeoPos: ACTION_FROM_GEOPOS: No Location sent");
                     Intent intent = new Intent();
                     intent.setAction(ACTION_FROM_GEOPOS);
                     intent.putExtra(SENDER, sender);
-                    intent.putExtra(MESSAGE, NO_LOCATION_FOUND_STATE + " ,Battery: " + bat);
+                    intent.putExtra(MESSAGE, NO_LOCATION_FOUND_STATE + " ,Battery: " + new CheckForSM().batteryLevel(context));
                     context.sendBroadcast(intent);
                 }
                 if (mFusedLocationClient != null) {
@@ -89,7 +88,10 @@ public class FindGeoPos implements KM_Constants {
                     accuracy = String.valueOf(Math.round(locationResult.getLastLocation().getAccuracy()));
                     long timestamp = locationResult.getLastLocation().getTime();
                     String time = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(timestamp);
-                    message = latitude + REG_SIGN + longitude + REG_SIGN + accuracy + REG_SIGN + time + REG_SIGN + batteryLevel()+ REG_SIGN + kid_phone;
+                    //message = latitude + REG_SIGN + longitude + REG_SIGN + accuracy + REG_SIGN + time + REG_SIGN + batteryLevel()+ REG_SIGN + kid_phone;
+                    message = latitude + REG_SIGN + longitude + REG_SIGN + accuracy + REG_SIGN + time + REG_SIGN
+                            + new CheckForSM().batteryLevel(context)+ REG_SIGN + kid_phone;
+
                     // Save Location to the Server
                     new OkHttpRequest().serverGetback(context, sender, message, "");
                     if (mFusedLocationClient != null) {
@@ -112,13 +114,13 @@ public class FindGeoPos implements KM_Constants {
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
-    public static String batteryLevel() {
+    /*public static String batteryLevel() {
         Intent intent  = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int    level   = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
         int    scale   = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
         int    percent = (level*100)/scale;
         return String.valueOf(percent) + "%";
-    }
+    } */
 }
 
 //public static final float SMALLEST_DISPLACEMENT = 1.0F;

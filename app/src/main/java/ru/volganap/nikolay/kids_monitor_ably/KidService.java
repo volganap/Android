@@ -14,7 +14,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.app.Service;
@@ -22,11 +21,10 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 
-import io.ably.lib.realtime.AblyRealtime;
-import io.ably.lib.realtime.Channel;
-import io.ably.lib.realtime.CompletionListener;
-import io.ably.lib.types.AblyException;
-import io.ably.lib.types.ErrorInfo;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import static java.lang.Long.valueOf;
 
@@ -38,9 +36,9 @@ public class KidService extends Service implements KM_Constants {
 
     private static final int NOTIFY_ID = 101;
     private static final String NOTIFY_CHANNEL_ID = "CHANNEL_ID";
-    private Channel channel;
     private String timer_delay;
     int attempt = 0;
+    private MqttHelper mqttHelper;
 
     @Override
     public void onCreate() {
@@ -48,27 +46,35 @@ public class KidService extends Service implements KM_Constants {
         Log.d(LOG_TAG, "Service: onCreate");
         sharedPrefs = getSharedPreferences(PREF_ACTIVITY, MODE_PRIVATE);
         ed = sharedPrefs.edit();
-
         notificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
-        //Init ABLY
-        try {
-            String ably_key = getBaseContext().getResources().getString(R.string.ably_key);
-            AblyRealtime ablyRealtime = new AblyRealtime(ably_key);
-            //AblyRealtime ablyRealtime = new AblyRealtime(ABLY_API_KEY);
-            channel = ablyRealtime.channels.get(ABLY_ROOM);
-            channel.subscribe(PARENT_PHONE, messages -> {
-                    String s_command = messages.data.toString();
-                Log.d(LOG_TAG, "Service - Ably message received (ALL): sender: " + messages.name + ", command: "  + s_command);
-                    if (messages.name.equals(PARENT_PHONE) && (s_command.contains(COMMAND_BASE))) {
-                        Log.d(LOG_TAG, "Service - Ably message received: sender: " + messages.name + ", command: "  + s_command);
-                        getCommand(s_command);
-                    }
-                }
-            );
 
-        } catch (AblyException e) {
-            e.printStackTrace();
-        }
+        //Init MQTT;
+        String id_mqtt = sharedPrefs.getString(KID_PHONE, "" ) + System.currentTimeMillis();;
+        Log.d(LOG_TAG,"Service: MQTT Id: " + id_mqtt);
+        mqttHelper = new MqttHelper(getApplicationContext(), KID_PHONE, id_mqtt);
+        mqttHelper.mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean b, String s) {
+                Log.d(LOG_TAG,"Service: MQTT * "+"Connected: " + s);
+            }
+
+            @Override
+            public void connectionLost(Throwable throwable) {
+                Log.d(LOG_TAG,"Service: MQTT * "+"Connection lost");
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                Log.d(LOG_TAG,"Service: MQTT: messageArrived * "+ mqttMessage.toString());
+                getCommand(mqttMessage.toString());
+                //dataReceived.setText(mqttMessage.toString());
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -174,13 +180,19 @@ public class KidService extends Service implements KM_Constants {
         String td_command = split_mes[1];
         String sender = split_mes[2];
         String kid_phone = split_mes[3];
+
+        // Check for an appropriate Parent number and command
+        if (!new CheckForSM().allowedOperation(getBaseContext(), sender, split_mes[0]))  {
+            return;
+        }
         // Check for an appropriate Kid number
         if (!(kid_phone.equals(sharedPrefs.getString(KID_PHONE, "" )))) {
             return;
         }
         // Check for connection
         if (td_command.equals(COMMAND_CHECK_IT)) {  // get back with the Kid location
-            sendMessageToParent(sender, CONFIRM_CONNECTION );
+            sendMessageToParent(sender, CONFIRM_CONNECTION + STA_SIGN   +
+                    " bat_lev: " + new CheckForSM().batteryLevel(getApplicationContext()));
             return;
         }
         // Find Kid's position
@@ -209,22 +221,16 @@ public class KidService extends Service implements KM_Constants {
     protected void sendMessageToParent (String sender, String message) {
         String kid_phone = sharedPrefs.getString(KID_PHONE, "" );
         if (attempt < 3) {
-            try { // ABLY PUBLISH a message
-                channel.publish(KID_PHONE, message + STA_SIGN + kid_phone, new CompletionListener() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(LOG_TAG, "Service - onSuccess - Message sent");
-                    }
-
-                    @Override
-                    public void onError(ErrorInfo reason) {
-                        Log.d(LOG_TAG, "Service - onError - Message not sent, error occurred: " + reason.message);
-                        attempt++;
-                        sendMessageToParent (sender, message);
-                    }
-                });
-            } catch (AblyException e) {
-                Log.d(LOG_TAG, "Service - AblyException - Message not sent: " + e.toString());
+            try {
+                message = message + STA_SIGN + kid_phone;
+                MqttMessage mes = new MqttMessage();
+                mes.setPayload(message.getBytes());
+                mqttHelper.mqttAndroidClient.publish(PARENT_PHONE, mes);
+                Log.d(LOG_TAG,"Service - MQTT - Message sent: " + message);
+            } catch (MqttException e) {
+                System.err.println("Error Publishing: " + e.getMessage());
+                Log.d(LOG_TAG,"Service - MQTT - Message sending Error: " + e.getMessage());
+                e.printStackTrace();
                 attempt++;
                 sendMessageToParent (sender, message);
             }
@@ -248,8 +254,15 @@ public class KidService extends Service implements KM_Constants {
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "Service: onDestroy");
+
+        try {
+            mqttHelper.mqttAndroidClient.unsubscribe(KID_PHONE);
+        } catch (MqttException ex) {
+            System.err.println("Exception whilst UNsubscribing");
+            ex.printStackTrace();
+        }
+
         unregisterReceiver(mainBroadcastReceiver);
-        channel.unsubscribe();
         notificationManager.cancel(NOTIFY_ID);
         stopSelf();
     }
